@@ -134,6 +134,12 @@ def main(input_fname, out_fname):
     LWdown.long_name = "Surface incident longwave radiation"
     LWdown.CF_name = "surface_downwelling_longwave_flux_in_air"
 
+    CO2 = f.createVariable('CO2air', 'f4', ('time', 'z', 'y', 'x',))
+    CO2.units = "ppm"
+    CO2.missing_value = -9999.
+    CO2.long_name = ""
+    CO2.CF_name = ""
+
     LAI = f.createVariable('LAI', 'f4', ('time', 'y', 'x'))
     LAI.setncatts({'long_name': u"Leaf Area Index",})
 
@@ -150,9 +156,13 @@ def main(input_fname, out_fname):
     lat,lon,rain,tair,qair,psurf,swdown,lwdown,wind,lai = \
                                     get_met_input(input_fname,loc_lat,loc_lon)
 
-    latitude[:]  = lat
-    longitude[:] = lon
+    print(lat)
+    print(lon)
 
+    latitude[0]  = lat
+    longitude[0] = lon
+    print(latitude[0])
+    print(longitude[0])
     SWdown[:,0,0] = swdown
     LWdown[:,0,0] = lwdown
     PSurf[:,0,0]  = psurf
@@ -186,7 +196,6 @@ def get_met_input(input_fname,loc_lat,loc_lon):
         # lai   =[]
 
         if month == 0:
-            print("month %f" % month)
             lat      = cable.variables['lat'][0,loc_lat,loc_lon]
             lon      = cable.variables['lon'][0,loc_lat,loc_lon]
             landmask = cable.variables['Landmask_inst'][0,loc_lat,loc_lon]
@@ -205,44 +214,20 @@ def get_met_input(input_fname,loc_lat,loc_lon):
             wind     = cable.variables['Wind_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
             lai      = cable.variables['LAI_inst'][:,loc_lat,loc_lon].filled(-9999.)
 
-        #     rain     = cable.variables['Rainf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     tair     = cable.variables['Tair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     qair     = cable.variables['Qair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     psurf    = cable.variables['Psurf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     swdown   = cable.variables['SWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     lwdown   = cable.variables['LWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     wind     = cable.variables['Wind_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)
-        #     lai      = cable.variables['LAI_inst'][:,loc_lat,loc_lon].filled(-9999.)
-
-        rain     = np.concatenate((rain,cable.variables['Rainf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        tair     = np.concatenate((tair,cable.variables['Tair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        qair     = np.concatenate((qair,cable.variables['Qair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        psurf    = np.concatenate((psurf,cable.variables['Psurf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        swdown   = np.concatenate((swdown,cable.variables['SWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        lwdown   = np.concatenate((lwdown,cable.variables['LWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        wind     = np.concatenate((wind,cable.variables['Wind_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
-        lai      = np.concatenate((lai,cable.variables['LAI_inst'][:,loc_lat,loc_lon].filled(-9999.)))
-
-        # rain.append(cable.variables['Rainf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # tair.append(cable.variables['Tair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # qair.append(cable.variables['Qair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # psurf.append(cable.variables['Psurf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # swdown.append(cable.variables['SWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # lwdown.append(cable.variables['LWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # wind.append(cable.variables['Wind_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
-        # lai.append(cable.variables['LAI_inst'][:,loc_lat,loc_lon].filled(-9999.))
-        # print(cable.variables['Rainf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.))
+        else:
+            rain     = np.concatenate((rain,cable.variables['Rainf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            tair     = np.concatenate((tair,cable.variables['Tair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            qair     = np.concatenate((qair,cable.variables['Qair_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            psurf    = np.concatenate((psurf,cable.variables['Psurf_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            swdown   = np.concatenate((swdown,cable.variables['SWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            lwdown   = np.concatenate((lwdown,cable.variables['LWdown_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            wind     = np.concatenate((wind,cable.variables['Wind_f_tavg'][:,loc_lat,loc_lon].filled(-9999.)))
+            lai      = np.concatenate((lai,cable.variables['LAI_inst'][:,loc_lat,loc_lon].filled(-9999.)))
 
         cable.close()
 
     print(rain)
-    # print(np.shape(tair))
-    # print(np.shape(qair))
-    # print(np.shape(psurf))
-    # print(np.shape(swdown))
-    # print(np.shape(lwdown))
-    # print(np.shape(wind))
-    # print(np.shape(lai))
+
 
     return lat,lon,rain,tair,qair,psurf,swdown,lwdown,wind,lai;
 
