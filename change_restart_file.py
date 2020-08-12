@@ -19,21 +19,23 @@ from scipy.signal import savgol_filter
 
 def main(restart_fname,hist_fname):
 
-    loc_lat = 54
-    loc_lon = 149
+    loc_lat = 54  # -35.5
+    loc_lon = 149 # 149
+
     # create file and write global attributes
-    f     = nc.Dataset(restart_fname, "r+", format="NETCDF4") #append to add
+    f     = nc.Dataset(restart_fname, "r+", format="NETCDF4")
     cable = nc.Dataset(hist_fname, 'r')
 
     print(cable.variables['y'][loc_lat])
     print(cable.variables['x'][loc_lon])
-    f.variables['wb']   = cable.variables['SoilMoist'][364,:,loc_lat,loc_lon].filled(-9999.)
-    f.variables['GWwb'] = cable.variables['GWMoist'][364,loc_lat,loc_lon].filled(-9999.)
+    f.variables['wb'][:,0]   = cable.variables['SoilMoist'][364,:,loc_lat,loc_lon].filled(-9999.)
+    f.variables['GWwb'][0] = cable.variables['GWMoist'][364,loc_lat,loc_lon].filled(-9999.)
     print(cable.variables['SoilMoist'][364,:,loc_lat,loc_lon])
     print(cable.variables['GWMoist'][364,loc_lat,loc_lon])
-    print(f.variables['wb'])
-    print(f.variables['GWwb'])
+    print(f.variables['wb'][:,0])
+    print(f.variables['GWwb'][0])
     f.close()
+    cable.close()
 
 if __name__ == "__main__":
 

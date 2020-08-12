@@ -22,9 +22,8 @@ import netCDF4 as nc
 import datetime
 from scipy.interpolate import interp1d
 from scipy.interpolate import griddata
-from scipy.signal import savgol_filter
 
-def main(input_fname, out_fname):
+def main(input_fname, out_fname, loc_lat, loc_lon, dels):
 
     print(input_fname[0])
     print(out_fname)
@@ -33,7 +32,6 @@ def main(input_fname, out_fname):
     PAR_2_SW     = 1.0 / SW_2_PAR
     HLFHR_2_SEC  = 1.0 / 1800.
 
-    dels  = 1800
     DOY   = 366
     nsoil = 6
     ndim  = 1
@@ -44,7 +42,7 @@ def main(input_fname, out_fname):
     secs  = dels
     for i in range(n_timesteps):
         times.append(secs)
-        secs += 1800.
+        secs += dels
 
     # create file and write global attributes
     f = nc.Dataset(out_fname, 'w', format='NETCDF4')
@@ -151,10 +149,8 @@ def main(input_fname, out_fname):
     soil_depth[:] = np.arange(0,nsoil,1)
     time[:] = times
 
-    loc_lat = 40
-    loc_lon = 140
     lat,lon,rain,tair,qair,psurf,swdown,lwdown,wind,lai = \
-                                    get_met_input(input_fname,loc_lat,loc_lon)
+                                    get_met_input(input_fname,loc_lat,loc_lon,dels)
 
     print(lat)
     print(lon)
@@ -175,7 +171,7 @@ def main(input_fname, out_fname):
 
     f.close()
 
-def get_met_input(input_fname,loc_lat,loc_lon):
+def get_met_input(input_fname,loc_lat,loc_lon,dels):
 
     """
     read met fields from LIS-CABLE output
@@ -186,14 +182,6 @@ def get_met_input(input_fname,loc_lat,loc_lon):
     for month in np.arange(0,12,1):
         print(month)
         cable = nc.Dataset(input_fname[month], 'r')
-        # rain  =[]
-        # tair  =[]
-        # qair  =[]
-        # psurf =[]
-        # swdown=[]
-        # lwdown=[]
-        # wind  =[]
-        # lai   =[]
 
         if month == 0:
             lat      = cable.variables['lat'][0,loc_lat,loc_lon]
@@ -231,7 +219,6 @@ def get_met_input(input_fname,loc_lat,loc_lon):
 
     return lat,lon,rain,tair,qair,psurf,swdown,lwdown,wind,lai;
 
-
 if __name__ == "__main__":
 
     path = "/g/data/w35/mm3972/model/wrf/NUWRF/LISWRF_configs/Princeton_ctl_2008_05hr/LIS_output/"
@@ -242,6 +229,15 @@ if __name__ == "__main__":
                    path+"LIS.CABLE.2008090100.d01.nc",path+"LIS.CABLE.2008100100.d01.nc",
                    path+"LIS.CABLE.2008110100.d01.nc",path+"LIS.CABLE.2008120100.d01.nc",
                    ]
-    out_fname = "pixel_met.nc"
+    out_fname = "./nc_files/pixel_met.nc"
 
-    main(input_fname, out_fname)
+    ## lat_-355_lon_1495
+    # loc_lat = 40
+    # loc_lon = 140
+
+    # lat = -33.604504 lon = 150.60345 PFT: 2-evergreen broadleaf
+    loc_lat = 47
+    loc_lon = 144
+
+    dels = 1800
+    main(input_fname, out_fname, loc_lat, loc_lon, dels)
