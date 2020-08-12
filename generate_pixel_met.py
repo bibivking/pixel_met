@@ -213,8 +213,43 @@ def get_met_input(input_fname,loc_lat,loc_lon,dels):
             lai      = np.concatenate((lai,cable.variables['LAI_inst'][:,loc_lat,loc_lon].filled(-9999.)))
 
         cable.close()
+    print(rain[:])
 
-    print(rain)
+    if dels != 1800:
+        tts_05hr = len(rain)
+        nts      = int(dels/1800)
+        tts      = int(tts_05hr/nts)
+        print("tts_05hr %s" % tts_05hr)
+        print("nts %s" % nts)
+        print("tts %s" % tts)
+        rain_tmp   = np.zeros(tts)
+        tair_tmp   = np.zeros(tts)
+        qair_tmp   = np.zeros(tts)
+        psurf_tmp  = np.zeros(tts)
+        swdown_tmp = np.zeros(tts)
+        lwdown_tmp = np.zeros(tts)
+        wind_tmp   = np.zeros(tts)
+        lai_tmp    = np.zeros(tts)
+        for j in np.arange(0,tts):
+            rain_tmp[j]    = np.average(rain[j*nts:(j+1)*nts])
+            tair_tmp[j]    = np.average(tair[j*nts:(j+1)*nts])
+            qair_tmp[j]    = np.average(qair[j*nts:(j+1)*nts])
+            psurf_tmp[j]   = np.average(psurf[j*nts:(j+1)*nts])
+            swdown_tmp[j]  = np.average(swdown[j*nts:(j+1)*nts])
+            lwdown_tmp[j]  = np.average(lwdown[j*nts:(j+1)*nts])
+            wind_tmp[j]    = np.average(wind[j*nts:(j+1)*nts])
+            lai_tmp[j]     = np.average(lai[j*nts:(j+1)*nts])
+
+        rain   = rain_tmp
+        tair   = tair_tmp
+        qair   = qair_tmp
+        psurf  = psurf_tmp
+        swdown = swdown_tmp
+        lwdown = lwdown_tmp
+        wind   = wind_tmp
+        lai    = lai_tmp
+
+    print(rain[:])
 
 
     return lat,lon,rain,tair,qair,psurf,swdown,lwdown,wind,lai;
@@ -229,15 +264,15 @@ if __name__ == "__main__":
                    path+"LIS.CABLE.2008090100.d01.nc",path+"LIS.CABLE.2008100100.d01.nc",
                    path+"LIS.CABLE.2008110100.d01.nc",path+"LIS.CABLE.2008120100.d01.nc",
                    ]
-    out_fname = "./nc_files/pixel_met.nc"
+    out_fname = "./nc_files/pixel_met_lat_-355_lon_1495_3hr.nc"
 
-    ## lat_-355_lon_1495
-    # loc_lat = 40
-    # loc_lon = 140
+    # lat_-355_lon_1495
+    loc_lat = 40
+    loc_lon = 140
 
-    # lat = -33.604504 lon = 150.60345 PFT: 2-evergreen broadleaf
-    loc_lat = 47
-    loc_lon = 144
+    # # lat = -33.604504 lon = 150.60345 PFT: 2-evergreen broadleaf
+    # loc_lat = 47
+    # loc_lon = 144
 
-    dels = 1800
+    dels = 3600*3
     main(input_fname, out_fname, loc_lat, loc_lon, dels)
