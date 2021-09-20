@@ -20,7 +20,7 @@ def main( fname, fname_cldstrt, fname_3hr_hess, fname_3hr_LIS,
           loc_lat, loc_lon, loc_lat_lis, loc_lon_lis, case_name, timestep):
 
     f         = nc.Dataset(fname, "r")
-    f_cldstrt = nc.Dataset(fname_cldstrt, "r")
+    # f_cldstrt = nc.Dataset(fname_cldstrt, "r")
     f_3hr_hess= nc.Dataset(fname_3hr_hess, 'r')
 
     print(f_3hr_hess.variables['x'][loc_lon])
@@ -44,20 +44,20 @@ def main( fname, fname_cldstrt, fname_3hr_hess, fname_3hr_LIS,
     var['GWMoist'] = f.variables['GWMoist'][:,0,0]
 
 
-    var_cldstrt          = pd.DataFrame(f_cldstrt.variables['Rainf'][:,0,0]*60.*60.*24., columns=['Rainf'])
-    var_cldstrt['Evap']  = f_cldstrt.variables['Evap'][:,0,0]*60.*60.*24.
-    var_cldstrt['TVeg']  = f_cldstrt.variables['TVeg'][:,0,0]*60.*60.*24.
-    var_cldstrt['ESoil'] = f_cldstrt.variables['ESoil'][:,0,0]*60.*60.*24.
-    var_cldstrt['ECanop']= f_cldstrt.variables['ECanop'][:,0,0]*60.*60.*24.
-    var_cldstrt['Qs']    = f_cldstrt.variables['Qs'][:,0,0]*60.*60.*24.
-    var_cldstrt['Qsb']   = f_cldstrt.variables['Qsb'][:,0,0]*60.*60.*24.
-    var_cldstrt['SM1']   = f_cldstrt.variables['SoilMoist'][:,0,0,0]
-    var_cldstrt['SM2']   = f_cldstrt.variables['SoilMoist'][:,1,0,0]
-    var_cldstrt['SM3']   = f_cldstrt.variables['SoilMoist'][:,2,0,0]
-    var_cldstrt['SM4']   = f_cldstrt.variables['SoilMoist'][:,3,0,0]
-    var_cldstrt['SM5']   = f_cldstrt.variables['SoilMoist'][:,4,0,0]
-    var_cldstrt['SM6']   = f_cldstrt.variables['SoilMoist'][:,5,0,0]
-    var_cldstrt['GWMoist'] = f_cldstrt.variables['GWMoist'][:,0,0]
+    # var_cldstrt          = pd.DataFrame(f_cldstrt.variables['Rainf'][:,0,0]*60.*60.*24., columns=['Rainf'])
+    # var_cldstrt['Evap']  = f_cldstrt.variables['Evap'][:,0,0]*60.*60.*24.
+    # var_cldstrt['TVeg']  = f_cldstrt.variables['TVeg'][:,0,0]*60.*60.*24.
+    # var_cldstrt['ESoil'] = f_cldstrt.variables['ESoil'][:,0,0]*60.*60.*24.
+    # var_cldstrt['ECanop']= f_cldstrt.variables['ECanop'][:,0,0]*60.*60.*24.
+    # var_cldstrt['Qs']    = f_cldstrt.variables['Qs'][:,0,0]*60.*60.*24.
+    # var_cldstrt['Qsb']   = f_cldstrt.variables['Qsb'][:,0,0]*60.*60.*24.
+    # var_cldstrt['SM1']   = f_cldstrt.variables['SoilMoist'][:,0,0,0]
+    # var_cldstrt['SM2']   = f_cldstrt.variables['SoilMoist'][:,1,0,0]
+    # var_cldstrt['SM3']   = f_cldstrt.variables['SoilMoist'][:,2,0,0]
+    # var_cldstrt['SM4']   = f_cldstrt.variables['SoilMoist'][:,3,0,0]
+    # var_cldstrt['SM5']   = f_cldstrt.variables['SoilMoist'][:,4,0,0]
+    # var_cldstrt['SM6']   = f_cldstrt.variables['SoilMoist'][:,5,0,0]
+    # var_cldstrt['GWMoist'] = f_cldstrt.variables['GWMoist'][:,0,0]
 
     var_3hr_hess          = pd.DataFrame(f_3hr_hess.variables['Rainf'][:,loc_lat,loc_lon]*60.*60.*24., columns=['Rainf'])
     var_3hr_hess['Evap']  = f_3hr_hess.variables['Evap'][:,loc_lat,loc_lon]*60.*60.*24.
@@ -75,16 +75,16 @@ def main( fname, fname_cldstrt, fname_3hr_hess, fname_3hr_LIS,
     var_3hr_hess['GWMoist'] = f_3hr_hess.variables['GWMoist'][:,loc_lat,loc_lon]
 
     f.close()
-    f_cldstrt.close()
+    # f_cldstrt.close()
     f_3hr_hess.close()
 
-    # var_3hr_LIS = get_daily_LIS_output(fname_3hr_LIS,loc_lat_lis,loc_lon_lis)
+    var_3hr_LIS = get_daily_LIS_output(fname_3hr_LIS,loc_lat_lis,loc_lon_lis)
 
 
     var.to_csv("./csv/water_balance_%s_%s_%s_%s.csv" % (timestep, loc_lat, loc_lon,case_name))
-    #var_cldstrt.to_csv("./csv/water_balance_%s_cldstrt_%s_%s_%s.csv" % (timestep, loc_lat, loc_lon,case_name))
-    #var_3hr_hess.to_csv("./csv/water_balance_3hr_hess_%s_%s.csv" % (loc_lat, loc_lon))
-    #var_3hr_LIS.to_csv("./csv/water_balance_3hr_LIS_%s_%s.csv" % (loc_lat, loc_lon))
+    # var_cldstrt.to_csv("./csv/water_balance_%s_cldstrt_%s_%s_%s.csv" % (timestep, loc_lat, loc_lon,case_name))
+    var_3hr_hess.to_csv("./csv/water_balance_3hr_hess_%s_%s.csv" % (loc_lat, loc_lon))
+    var_3hr_LIS.to_csv("./csv/water_balance_3hr_LIS_%s_%s.csv" % (loc_lat, loc_lon))
 
 
 
@@ -155,15 +155,25 @@ def get_daily_LIS_output(input_fname,loc_lat_lis,loc_lon_lis):
 if __name__ == "__main__":
 
 
-    # lat_-355_lon_1495
-    loc_lat = 54  # -35.5
-    loc_lon = 149 # 149
-    loc_lat_lis = 40
-    loc_lon_lis = 140
-    case_name = "lat_-355_lon_1495_grass_LIS_g1_vcmax"
+    # # lat_-355_lon_1495
+    # loc_lat = 54  # -35.5
+    # loc_lon = 149 # 149
+    # loc_lat_lis = 40
+    # loc_lon_lis = 140
+    # case_name = "lat_-355_lon_1495_grass_LIS_root"
+
+    # lat = -33.5 lon = 150.5
+    loc_lat = 56
+    loc_lon = 150
+    loc_lat_lis = 47
+    loc_lon_lis = 144
+    case_name = "lat_-335_lon_1505_broadleaf_forest"
+    # case_name = "lat_-335_lon_1505_forest_LIS_all"
+    #"lat_-355_lon_1495_grass_LIS_g1_vcmax"
 
     timestep = "05hr"
     fname        = "/g/data/w35/mm3972/model/cable/runs/my_version/run_Princeton_single_pixel/ctl/outputs/%s/cable_out_2008.nc" % case_name
+    #fname        = "/g/data/w35/mm3972/model/cable/runs/my_version/run_Princeton_single_pixel/ctl/outputs/cable_out_2008.nc"
     fname_cldstrt= "/g/data/w35/mm3972/model/cable/runs/my_version/run_Princeton_single_pixel/ctl/outputs/%s/cable_out_2008_cldstrt.nc" % case_name
     fname_3hr_hess = "/g/data/w35/mm3972/model/cable/runs/my_version/run_Princeton/ctl_daily/outputs/cable_out_2008.nc"
 
@@ -177,9 +187,6 @@ if __name__ == "__main__":
                      path_LIS+"LIS.CABLE.2008110100.d01.nc",path_LIS+"LIS.CABLE.2008120100.d01.nc",
                     ]
 
-    # # lat = -33.5 lon = 150.5 PFT: 2-evergreen broadleaf
-    # loc_lat = 56
-    # loc_lon = 150
 
     main(fname, fname_cldstrt, fname_3hr_hess, fname_3hr_LIS,
          loc_lat, loc_lon, loc_lat_lis, loc_lon_lis, case_name, timestep)
